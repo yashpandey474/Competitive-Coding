@@ -1,6 +1,7 @@
 class Node:
-    def __init__(self, val = None, next = None, prev = None):
+    def __init__(self, val = None, next = None, prev = None, key = None):
         self.val = val
+        self.key = key
         self.next = next
         self.prev = prev
 
@@ -11,13 +12,17 @@ class DLL:
         self.head.next = self.tail
         self.tail.prev = self.head
 
-    def insertNode(self, key):
-        newNode = Node(val = key)
+    #O(1) OPERATION
+    def insertNode(self, key, value):
+        newNode = Node(val = value, key = key)
         self.head.next.prev = newNode
         newNode.next = self.head.next
         newNode.prev = self.head
         self.head.next = newNode
 
+        return newNode
+
+    #O(1) OPERATION
     def removeLast(self):
         if self.tail.prev == self.head:
             return
@@ -25,19 +30,9 @@ class DLL:
         self.tail.prev.prev.next = self.tail
         self.tail.prev = self.tail.prev.prev
 
-    def removeNode(self, key):
-        current = self.head.next
-        previous = self.head
-
-        while current is not None and current.val != key:
-            previous = current
-            current = current.next
-        
-        if current is not None:
-            previous.next = current.next
-            if current.next is not None:
-                current.next.prev = previous
-        
+    def removeNode(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
 
 
 class LRUCache(object):
@@ -59,9 +54,10 @@ class LRUCache(object):
 
         #IN HASHMAP
         if key in self.map:
-            self.DLL.removeNode(key)
-            self.DLL.insertNode(key)
-            return self.map[key]
+            #PASS THE NODE TO REMOVE
+            self.DLL.removeNode(self.map[key])
+            self.map[key] = self.DLL.insertNode(key = key, value = self.map[key].val)
+            return self.map[key].val
         return -1
         
 
@@ -72,22 +68,24 @@ class LRUCache(object):
         :rtype: None
         """
         if key in self.map:
-            self.DLL.removeNode(key)
-            self.map[key] = value
-            self.DLL.insertNode(key)
+            #PASS NODE TO REMOVE
+            self.DLL.removeNode(self.map[key])
+            node = self.DLL.insertNode(key = key, value = value)
+            self.map[key] = node
 
         #DONT HAVE TO REMOVE
         elif len(self.map) < self.capacity:
-            self.map[key] = value
-            self.DLL.insertNode(key)
+            node = self.DLL.insertNode(key = key, value = value)
+            self.map[key] = node
 
         #HAVE TO REMOVE
         else:
-            key_delete = self.DLL.tail.prev.val
+            key_delete = self.DLL.tail.prev.key
             del self.map[key_delete]
             self.DLL.removeLast()
-            self.map[key] = value
-            self.DLL.insertNode(key)
+            node = self.DLL.insertNode(key = key, value = value)
+            self.map[key] = node
+            
         
 
 
