@@ -1,0 +1,43 @@
+from os import *
+from sys import *
+from collections import *
+from math import *
+
+
+def recursion_dp(n, target_sum, arr, current_index, memo):
+    if current_index >= len(arr):
+        if target_sum == 0:
+            return True
+        return False
+
+    if target_sum < 0:
+        return False
+
+    if target_sum == 0:
+        return True
+    #CHECK THE MEMO ARRAY: IF SUM EXISTS FOR THIS INDEX
+    if memo[current_index][target_sum] != -1:
+        return memo[current_index][target_sum]
+
+    #0/1 KNAPSACK
+    else:
+        memo[current_index][target_sum] =  (recursion_dp(n, target_sum-arr[current_index], arr, current_index+1, memo) or 
+        recursion_dp(n, target_sum, arr, current_index+1, memo))
+        return memo[current_index][target_sum]
+    
+
+    
+    
+def subsetSumToK(n, k, arr):
+
+    # Write your code here
+    # Return a boolean variable 'True' or 'False' denoting the answer
+
+    #INITIALISE THE MEMO ARRAY: INDEX 0 TO N-1 AND SUM 0 TO K
+    memo = [[-1]*(k+1) for _ in range(n)]
+    #NUMBER OF ELEMENTS; TARGET SUM; ARR; INDEX; CURRENT SUM
+    return recursion_dp(n, k, arr, 0, memo)
+    
+    
+    
+
