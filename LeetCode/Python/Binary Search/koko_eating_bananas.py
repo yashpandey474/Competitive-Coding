@@ -1,30 +1,30 @@
 class Solution:
     def minEatingSpeed(self, piles: List[int], h: int) -> int:
+        total = sum(piles)
+        n = len(piles)
 
-        def canEat(mid):
+        l = ceil(total / h)
+        r = max(piles)
+
+
+        def valid(mid):
             hours = 0
-            for p in piles:
-                hours += ceil(p/mid)
+
+            for a in piles:
+                hours += ceil(a/mid)
             
             return hours <= h
-                
-        #LOWEST POSSIBLE
-        left = 1
-        #WORST POSSIBLE
-        high = max(piles)
-        #BEST IN WORST CASE
-        result = high
 
-        while left <= high:
-            mid = (left + ((high - left)//2))
+        sol = r
 
-            if canEat(mid):
-                result = mid
-                #UPDATE HIGHEST
-                high = mid - 1
+        while l <= r:
+            mid = l + (r-l)//2
+
+            if valid(mid):
+                sol = mid
+                r = mid - 1
 
             else:
-                #UPDATE LOWEST
-                left = mid + 1
+                l = mid + 1
 
-        return result
+        return sol
